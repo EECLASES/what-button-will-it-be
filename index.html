@@ -1,17 +1,295 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Button Demo</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <main>
-    <button id="myButton" class="btn" type="button">Click me</button>
-    <p id="output" class="output"></p>
+
+<title>Thad's Video Collaborations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..400&display=swap">
+
+<style>
+  /* ---- tokens: light is the base, both dark states re-declare the same names ---- */
+  :root {
+    --paper:      #E9EBE6;   /* 18% grey card, biased faintly green */
+    --paper-2:    #F4F5F1;
+    --ink:        #171E22;
+    --ink-soft:   #4E585C;
+    --ink-faint:  #8A9296;
+    --rule:       #C8CCC3;
+    --tally:      #C4392A;   /* the record light */
+    --tally-ink:  #FBF7F5;
+    --shadow:     0 1px 0 rgba(23,30,34,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #14191C;
+      --paper-2:   #1C2327;
+      --ink:       #E8EBE5;
+      --ink-soft:  #A2ACAC;
+      --ink-faint: #6C7679;
+      --rule:      #2E3639;
+      --tally:     #E4523F;
+      --tally-ink: #12171A;
+      --shadow:    0 1px 0 rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #14191C;
+    --paper-2:   #1C2327;
+    --ink:       #E8EBE5;
+    --ink-soft:  #A2ACAC;
+    --ink-faint: #6C7679;
+    --rule:      #2E3639;
+    --tally:     #E4523F;
+    --tally-ink: #12171A;
+    --shadow:    0 1px 0 rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Newsreader", Georgia, "Times New Roman", serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .sheet {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: clamp(2rem, 6vh, 4.5rem);
+    padding: clamp(1.25rem, 4vw, 2.75rem);
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  /* ---- top bar ---- */
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mark {
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-variation-settings: "wdth" 118, "wght" 700;
+    font-size: 1.05rem;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+  }
+  .mark span { color: var(--tally); }
+  .status {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .72rem;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .tally {
+    width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    background: var(--tally);
+    box-shadow: 0 0 0 0 var(--tally);
+    animation: blink 1.9s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1;  box-shadow: 0 0 0 0 color-mix(in srgb, var(--tally) 45%, transparent); }
+    55%      { opacity: .35; box-shadow: 0 0 0 .3rem color-mix(in srgb, var(--tally) 0%, transparent); }
+  }
+
+  /* ---- hero ---- */
+  .hero {
+    align-self: center;
+    display: grid;
+    gap: clamp(1.5rem, 4vh, 2.5rem);
+    position: relative;
+    padding: clamp(1rem, 3vw, 2rem) 0;
+  }
+  /* crop marks — the frame you'd compose inside */
+  .hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    width: 22px; height: 22px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .hero::before { top: 0; left: -14px;  border-right: 0; border-bottom: 0; }
+  .hero::after  { bottom: 0; right: -14px; border-left: 0;  border-top: 0; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: .74rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--tally);
+    margin: 0;
+  }
+
+  h1 {
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-variation-settings: "wdth" 112, "wght" 600;
+    font-size: clamp(2.5rem, 7.2vw, 5.1rem);
+    line-height: .97;
+    letter-spacing: -.022em;
+    text-wrap: balance;
+    margin: 0;
+    max-width: 15ch;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--tally);
+  }
+
+  .lede {
+    font-size: clamp(1.06rem, 1.9vw, 1.32rem);
+    line-height: 1.55;
+    font-weight: 350;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .lede b { font-weight: 500; color: var(--ink); }
+
+  /* ---- the two asks ---- */
+  .asks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem 1rem;
+    align-items: center;
+  }
+  .btn {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: .95rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    border: 1px solid transparent;
+    transition: transform .15s ease, background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .btn:focus-visible { outline: 2px solid var(--tally); outline-offset: 3px; }
+  .btn-primary {
+    background: var(--tally);
+    color: var(--tally-ink);
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-ghost {
+    background: var(--paper-2);
+    color: var(--ink);
+    border-color: var(--rule);
+    box-shadow: var(--shadow);
+  }
+  .btn-ghost:hover { border-color: var(--ink-faint); transform: translateY(-2px); }
+  .note {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: .7rem;
+    letter-spacing: .06em;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+
+  /* ---- footer strip: running timecode + frame ticks ---- */
+  .strip {
+    border-top: 1px solid var(--rule);
+    padding-top: .9rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem 1.5rem;
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  #tc {
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .ticks {
+    flex: 1 1 120px;
+    height: 10px;
+    min-width: 90px;
+    background-image: repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 9px);
+    opacity: .9;
+  }
+
+  /* ---- entrance ---- */
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.3,1) backwards; }
+  .rise:nth-child(1) { animation-delay: .05s; }
+  .rise:nth-child(2) { animation-delay: .13s; }
+  .rise:nth-child(3) { animation-delay: .21s; }
+  .rise:nth-child(4) { animation-delay: .29s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="bar">
+    <div class="mark">Thad<span>.</span></div>
+    <div class="status"><i class="tally" aria-hidden="true"></i> Open for collaboration — 2026</div>
+  </header>
+
+  <main class="hero">
+    <p class="eyebrow rise">Video collaborations</p>
+
+    <h1 class="rise">Want to know more — and hear it <em>first?</em></h1>
+
+    <p class="lede rise">A handful of video projects are opening up for collaborators: shoots,
+      edits, and co-productions. <b>Ask for the details</b>, or leave your name and get a note
+      the moment the next one opens.</p>
+
+    <div class="asks rise">
+      <a class="btn btn-primary" href="mailto:mike@robjectsprojects.cc?subject=Tell%20me%20more%20about%20the%20video%20collaborations">Tell me more</a>
+      <a class="btn btn-ghost" href="mailto:mike@robjectsprojects.cc?subject=Keep%20me%20posted%20on%20video%20collaborations&amp;body=Add%20me%20to%20the%20list%20%E2%80%94%20here's%20what%20I%20do%3A">Keep me posted</a>
+      <p class="note">Updates only when there's something real<br>to share. No list, no noise.</p>
+    </div>
   </main>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <footer class="strip">
+    <span id="tc">00:00:00:00</span>
+    <span class="ticks" aria-hidden="true"></span>
+    <span>Reel and rates on request</span>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var el = document.getElementById('tc');
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = '00:00:04:11';
+      return;
+    }
+    var start = performance.now();
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick(now) {
+      var s = (now - start) / 1000;
+      var f = Math.floor((s % 1) * 24);
+      var total = Math.floor(s);
+      el.textContent = pad(Math.floor(total / 3600)) + ':' +
+                       pad(Math.floor(total / 60) % 60) + ':' +
+                       pad(total % 60) + ':' + pad(f);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+</script>
