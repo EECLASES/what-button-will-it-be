@@ -9,25 +9,7 @@ A minimal button built with plain HTML, CSS, and JavaScript — no frameworks, n
 | File | Purpose |
 | --- | --- |
 | [`index.html`](index.html) | Markup — the `<button>` element and the output paragraph |
-| [`styles.css`](styles.css) | Styling — colors via CSS custom properties, plus hover/active/focus states |
-| [`script.js`](script.js) | Behavior — a click listener that counts clicks and writes the total to the page |
-
-## Run it locally
-
-Clone the repo and open the page directly in a browser:
-
-```bash
-git clone https://github.com/mrmikeymarks/button-demo.git
-cd button-demo
-open index.html   # macOS — use `xdg-open` on Linux, `start` on Windows
-```
-
-Or serve it over HTTP (needed if you later add `fetch`, modules, or anything else
-blocked on the `file://` protocol):
-
-```bash
-python3 -m http.server 8000
-```
+| [`styles.css`](styles.c
 
 Then visit http://localhost:8000.
 
